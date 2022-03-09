@@ -8,12 +8,44 @@
       </div>
       <div class="card-body">
        <p class="card-text">Veuillez renseigner les zones suivantes et soumettre votre demande</p>
+       <form class="form-horizontal"
+       novalidate
+       (ngSubmit)="save()"
+       [formGroup]="problemeForm">
+       <!-- Zone de texte PRENOM -->
+       <div class="form-group row">          
+            <label for="prenomId" class="col-md-2 col-form-label text-right">Prénom :</label>
+      <div class="col-md-10">
+            <input class="form-control" 
+              id="prenomId" 
+              type="text" 
+              placeholder="Votre prénom ici (obligatoire)" 
+              formControlName="prenom"            
+              [ngClass]="{'is-valid': (problemeForm.get('prenom').touched || 
+              problemeForm.get('prenom').dirty) &&
+              problemeForm.get('prenom').valid,
+              'is-invalid': (problemeForm.get('prenom').touched || 
+              problemeForm.get('prenom').dirty) &&
+              !problemeForm.get('prenom').valid}"
+            />
+              <span class="form-text" *ngIf="(problemeForm.get('prenom').touched || problemeForm.get('prenom').dirty) && (problemeForm.get('prenom').errors)">
+               <span *ngIf=" problemeForm.get('prenom').errors['required']">
+               <small class="text-muted">
+                Merci de saisir votre prénom.
+             </small>
+            </span>
+           </span> 
+           <span class="form-text" *ngIf="(problemeForm.get('prenom').touched || problemeForm.get('prenom').dirty) && (problemeForm.get('prenom').errors)">
+            <span *ngIf=" problemeForm.get('prenom').errors['minlength']">
+            <small class="text-muted">
+             Veuillez entrer plus de caractères.
+          </small>
+         </span>
+        </span> 
+      </div></div>
+       </form>
       </div>
       <div class="card-footer">
-            <!-- Bouton save ici -->
-            <button class="btn btn-primary" type="submit">
-                  Sauvegarder
-            </button>    
       </div>
     </div>
 </div>
