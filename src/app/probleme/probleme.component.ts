@@ -4,6 +4,9 @@ import { emailMatcherValidator } from '../shared/email-matcher/email-matcher.com
 import { VerifierCaracteresValidator } from '../shared/longueur-minimum/longueur-minimum.component';
 import { ITypeProbleme } from './typeprobleme';
 import { TypeproblemeService } from './typeprobleme.service';
+import { Router } from '@angular/router';
+import { IProbleme } from './probleme';
+import { ProblemeService } from './probleme.service';
  
 
 @Component({
@@ -15,7 +18,10 @@ export class ProblemeComponent implements OnInit {
   problemeForm: FormGroup;
   typesProbleme: ITypeProbleme[];
   errorMessage: string;
-  constructor(private fb: FormBuilder, private typeproblemeService: TypeproblemeService) { }
+
+  probleme: IProbleme;
+
+  constructor(private fb: FormBuilder, private typeproblemeService: TypeproblemeService, private problemeService: ProblemeService, private route: Router) { }
 
   ngOnInit(){
     this.problemeForm = this.fb.group({
@@ -40,7 +46,32 @@ export class ProblemeComponent implements OnInit {
       .subscribe(value => this.appliquerNotifications(value));
 
   }
+ 
+
   save(): void {
+    if (this.problemeForm.dirty && this.problemeForm.valid) {
+        // Copy the form values over the problem object values
+        this.probleme = this.problemeForm.value;
+        this.probleme.id = 0;
+         if(this.problemeForm.get('courrielGroup.courriel').value != '')
+        {
+          this.probleme.courriel = this.problemeForm.get('courrielGroup.courriel').value;
+        }
+    
+        this.problemeService.saveProbleme(this.probleme)
+            .subscribe({
+              next: () => this.onSaveComplete(),
+              error: err => this.errorMessage = err
+          })
+    } else if (!this.problemeForm.dirty) {
+        this.onSaveComplete();
+    }
+  }
+
+  onSaveComplete(): void {
+    // Reset the form to clear the flags
+    this.problemeForm.reset();  // Pour remettre Dirty à false.  Autrement le Route Guard va dire que le formulaire n'est pas sauvegardé
+    this.route.navigate(['/accueil']);
   }
 
   appliquerNotifications(typesNotifications: string): void {                              //courriel / courriel confirmation / telephone
